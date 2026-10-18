@@ -21,8 +21,9 @@ passes the house rules (digest-pinned image, non-root, read-only root, probes, l
 ![pytest -v: the real config passes, every mutation is caught](docs/proof/tests.jpg)
 
 The real rollout on a kind cluster (Flagger creates the primary, the HTTPRoute weights move
-through the steps, the new image is promoted) is written into CI (`scripts/e2e.sh`). It has
-not run yet: this machine uses no Docker. See [Tests and results](#tests-and-results).
+through the steps, the new image is promoted) runs in CI (`scripts/e2e.sh`). Its first GitHub run (2026-10-18) passed: the observed weights
+were 5, 10, 20, 40, 60, 80 as scheduled, the route weights summed to 100 at every sample, and podinfo
+6.15.0 was promoted. It was not run on this machine (no local Docker). See [Tests and results](#tests-and-results).
 
 ## Architecture
 
@@ -142,7 +143,7 @@ Latest local run (full detail in [docs/results/m1.md](docs/results/m1.md)):
 | Lint | yamllint, ruff, mypy --strict: clean |
 | Audit | pip-audit: no known vulnerabilities |
 | Schedule | canary 5, 10, 20, 40, 60, 80% every 15 s; promotion after about 105 s |
-| Real rollout on kind | CI only, not run yet (no local Docker) |
+| Real rollout on kind | CI, passed on 2026-10-18: weights 5-10-20-40-60-80 observed as expected, phase Succeeded, podinfo 6.15.0 promoted (not run locally) |
 
 CI runs the checks, tests and audit on every push, then the kind rollout, which prints a notice
 at initialization and at promotion with the observed weights.
