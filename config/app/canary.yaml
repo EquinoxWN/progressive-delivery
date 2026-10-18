@@ -1,0 +1,28 @@
+# Flagger creates podinfo-primary (the stable copy), the services podinfo, podinfo-primary and
+# podinfo-canary, and an HTTPRoute on the shared gateway. When the Deployment's pod template
+# changes, traffic moves to the canary in the steps below, one step per interval, then the new
+# version is promoted to the primary.
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: podinfo
+  namespace: demo
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: podinfo
+  progressDeadlineSeconds: 120
+  service:
+    port: 9898
+    targetPort: 9898
+    hosts:
+      - podinfo.example.com
+    gatewayRefs:
+      - name: public
+        namespace: gateway
+  analysis:
+    interval: 15s
+    threshold: 5
+    stepWeights: [5, 10, 20, 40, 60, 80]
+    # M2 adds Prometheus success-rate and p99-latency checks here; without metrics every step passes.

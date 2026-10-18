@@ -1,0 +1,10 @@
+# Flagger 1.45.0 chart: route traffic through the Gateway API, no bundled Prometheus in M1.
+meshProvider: gatewayapi:v1
+prometheus:
+  install: false
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    memory: 256Mi
